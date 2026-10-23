@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#172554" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Cougar Selects Attendance</title>
+  <style>
+    :root{--navy:#172554;--blue:#1d4ed8;--orange:#f97316;--red:#ef4444;--green:#059669;--bg:#f1f5f9;--muted:#64748b;--line:#e2e8f0}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#0f172a;padding-bottom:90px} button,input{font:inherit}
+    header{background:linear-gradient(135deg,#172554,#1d4ed8);color:#fff;padding:calc(22px + env(safe-area-inset-top)) 18px 20px;box-shadow:0 3px 12px #0002} header small{color:#bfdbfe;font-weight:800;letter-spacing:.18em} h1{font-size:25px;margin:4px 0 0}
+    nav{position:sticky;top:0;z-index:4;background:#fff;border-bottom:1px solid var(--line);padding:8px}.nav{max-width:760px;margin:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.nav button{border:0;background:#fff;color:var(--muted);padding:11px 4px;border-radius:12px;font-weight:800}.nav button.active{background:var(--blue);color:#fff}
+    main{max-width:760px;margin:auto;padding:16px}.panel{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 2px 7px #0000000b;margin-bottom:16px;overflow:hidden}.pad{padding:16px}.label{font-size:12px;text-transform:uppercase;color:var(--muted);font-weight:800}.date{width:100%;margin-top:6px;border:1px solid #cbd5e1;border-radius:12px;padding:12px;font-size:18px;font-weight:800;background:#fff}.teams{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.team{border:0;background:#f1f5f9;color:#475569;border-radius:12px;padding:13px;font-weight:800}.team.active{background:var(--orange);color:white}
+    .heading{padding:16px;border-bottom:1px solid var(--line)}.heading h2{margin:0;font-size:19px}.heading p{margin:5px 0 0;color:var(--muted);font-size:14px}.saved-tag{display:inline-block;margin-top:7px;background:#dbeafe;color:#1d4ed8;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:800}
+    .player{width:100%;border:0;border-bottom:1px solid var(--line);background:white;padding:15px 16px;display:flex;align-items:center;justify-content:space-between;text-align:left;font-weight:700}.player:last-child{border-bottom:0}.player.absent{background:#fef2f2}.check{width:32px;height:32px;border:2px solid #cbd5e1;border-radius:50%;display:grid;place-items:center}.absent .check{background:var(--red);border-color:var(--red);color:#fff}.save{width:100%;border:0;border-radius:16px;background:var(--blue);color:#fff;padding:16px;font-weight:900;font-size:16px;box-shadow:0 5px 12px #1d4ed833}.save.done{background:var(--green)}
+    .hidden{display:none}.row{display:flex;gap:8px}.row input{min-width:0;flex:1;border:1px solid #cbd5e1;border-radius:12px;padding:12px}.add{border:0;border-radius:12px;padding:0 17px;background:var(--blue);color:white;font-size:24px}.roster-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}.delete{border:0;background:none;color:#94a3b8;font-size:20px}.backup{display:grid;grid-template-columns:1fr 1fr;gap:8px}.secondary{border:1px solid #cbd5e1;background:#fff;border-radius:12px;padding:12px;font-weight:800;text-align:center}.team-title{background:var(--navy);color:#fff;padding:12px 16px;font-weight:900}.report-row{border-bottom:1px solid var(--line)}.report-summary{padding:14px 16px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}.badge{border-radius:999px;padding:5px 10px;font-size:13px;font-weight:900;background:#d1fae5;color:#047857}.badge.missed{background:#fee2e2;color:#b91c1c}.dates{padding:0 16px 14px;color:var(--muted);font-size:14px}.history{padding:14px 16px;border-bottom:1px solid var(--line)}.history-head{display:flex;justify-content:space-between;font-weight:900}.history-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:10px;font-size:14px}.history-grid p{margin:3px 0;color:var(--muted)}
+    @media(min-width:700px){main{padding-top:24px}}
+  </style>
+</head>
+<body>
+<header><div style="max-width:760px;margin:auto"><small>COUGAR SELECTS</small><h1>Practice Attendance</h1></div></header>
+<nav><div class="nav"><button data-tab="attendance" class="active">Attendance</button><button data-tab="players">Players</button><button data-tab="reports">Reports</button></div></nav>
+<main>
+<section id="attendance">
+  <div class="panel pad"><div class="label">Practice date</div><input id="date" class="date" type="date"><div class="teams" id="teamButtons"></div></div>
+  <div class="panel"><div class="heading"><h2>Who is absent?</h2><p>Tap each absent player. Everyone else is treated as present. To correct an entry, reopen the date, tap the player again, and save the update.</p><span id="recorded" class="saved-tag hidden">Previously saved</span></div><div id="attendancePlayers"></div></div>
+  <button id="save" class="save">Save</button>
+</section>
+<section id="players" class="hidden">
+  <div class="teams" id="rosterTeamButtons" style="margin:0 0 16px"></div>
+  <div class="panel pad"><h2 style="margin-top:0">Edit <span id="rosterTeamName"></span> roster</h2><div class="row"><input id="newPlayer" placeholder="Player name"><button id="addPlayer" class="add">+</button></div><div id="roster"></div></div>
+  <div class="panel pad"><h2 style="margin-top:0">Backup</h2><p style="color:var(--muted)">Attendance is stored on this device. Export a backup regularly.</p><div class="backup"><button id="export" class="secondary">Export</button><label class="secondary">Import<input id="import" type="file" accept="application/json" hidden></label></div></div>
+</section>
+<section id="reports" class="hidden"><h2>Missed practices by player</h2><p style="color:var(--muted)">Tap a player to see all absence dates.</p><div id="playerReports"></div><h2 style="margin-top:24px">Practice history</h2><div id="practiceHistory"></div></section>
+</main>
+<script>
+const KEY='cougar-selects-attendance-v3';
+const starter={teams:{'Grade 5':['Beckham Chung','Benjamin Willows','Eli Panko','Gabe Cherkas','Gus Munro','Hunter Howath','Kamden Vongkhamchanh','Marshall Seiferling'],'Grade 6':['Benson Hoffart','Everett Smith','Henry Jesse','Hudson Ludik','Ishan Le','Jude McCannel','Kaius Acquah','Roy Waller','Will Glover']},practices:{}};
+let data;try{data=JSON.parse(localStorage.getItem(KEY))||structuredClone(starter)}catch{data=structuredClone(starter)}
+let team='Grade 5', draft=[]; const q=s=>document.querySelector(s); const qa=s=>[...document.querySelectorAll(s)];
+q('#date').value=new Date().toLocaleDateString('en-CA');
+function saveData(){localStorage.setItem(KEY,JSON.stringify(data))}
+function fmt(d){return new Date(d+'T12:00:00').toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}
+function recorded(){return Object.prototype.hasOwnProperty.call(data.practices[q('#date').value]||{},team)}
+function renderTeamButtons(){['#teamButtons','#rosterTeamButtons'].forEach(id=>{q(id).innerHTML=Object.keys(data.teams).map(t=>`<button class="team ${team===t?'active':''}" data-team="${t}">${t}</button>`).join('')});qa('[data-team]').forEach(b=>b.onclick=()=>{team=b.dataset.team;loadDraft();renderAll()})}
+function loadDraft(){draft=[...(data.practices[q('#date').value]?.[team]||[])]}
+function renderAttendance(){q('#attendancePlayers').innerHTML=data.teams[team].map(n=>`<button class="player ${draft.includes(n)?'absent':''}" data-player="${n.replaceAll('"','&quot;')}"><span>${n}</span><span class="check">${draft.includes(n)?'✓':''}</span></button>`).join('');qa('[data-player]').forEach(b=>b.onclick=()=>{const n=b.dataset.player;draft=draft.includes(n)?draft.filter(x=>x!==n):[...draft,n];renderAttendance()});q('#recorded').classList.toggle('hidden',!recorded());q('#save').textContent=(recorded()?'Update ':'Save ')+team}
+function renderRoster(){q('#rosterTeamName').textContent=team;q('#roster').innerHTML=data.teams[team].map(n=>`<div class="roster-row"><b>${n}</b><button class="delete" data-delete="${n.replaceAll('"','&quot;')}">×</button></div>`).join('');qa('[data-delete]').forEach(b=>b.onclick=()=>{if(confirm('Remove '+b.dataset.delete+' from '+team+'?')){data.teams[team]=data.teams[team].filter(n=>n!==b.dataset.delete);saveData();renderAll()}})}
+function renderReports(){q('#playerReports').innerHTML=Object.entries(data.teams).map(([t,ps])=>`<div class="panel"><div class="team-title">${t}</div>${ps.map(n=>{const ds=Object.entries(data.practices).filter(([,ts])=>(ts[t]||[]).includes(n)).map(([d])=>d).sort();return `<details class="report-row"><summary class="report-summary"><b>${n}</b><span class="badge ${ds.length?'missed':''}">${ds.length} missed</span></summary>${ds.length?`<div class="dates">${ds.map(d=>`<div>${fmt(d)}</div>`).join('')}</div>`:''}</details>`}).join('')}</div>`).join('');const rows=Object.entries(data.practices).sort(([a],[b])=>b.localeCompare(a));q('#practiceHistory').innerHTML=rows.length?rows.map(([d,ts])=>{const g5=ts['Grade 5']||[],g6=ts['Grade 6']||[];return `<div class="panel history"><div class="history-head"><span>${fmt(d)}</span><span>${g5.length+g6.length} absent</span></div><div class="history-grid"><div><b>Grade 5</b><p>${g5.length?g5.join(', '):'None'}</p></div><div><b>Grade 6</b><p>${g6.length?g6.join(', '):'None'}</p></div></div></div>`}).join(''):'<div class="panel pad" style="color:var(--muted)">No practices recorded yet.</div>'}
+function renderAll(){renderTeamButtons();renderAttendance();renderRoster();renderReports()}
+q('#date').onchange=()=>{loadDraft();renderAll()};q('#save').onclick=()=>{const d=q('#date').value;data.practices[d]={...(data.practices[d]||{}),[team]:draft};saveData();renderAll();q('#save').textContent='Saved';q('#save').classList.add('done');setTimeout(()=>{q('#save').classList.remove('done');renderAttendance()},1400)};
+q('#addPlayer').onclick=()=>{const n=q('#newPlayer').value.trim();if(n&&!data.teams[team].includes(n)){data.teams[team]=[...data.teams[team],n].sort((a,b)=>a.localeCompare(b));q('#newPlayer').value='';saveData();renderAll()}};q('#newPlayer').onkeydown=e=>{if(e.key==='Enter')q('#addPlayer').click()};
+q('#export').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='cougar-selects-attendance-backup.json';a.click();URL.revokeObjectURL(a.href)};q('#import').onchange=e=>{const r=new FileReader();r.onload=()=>{try{data=JSON.parse(r.result);saveData();loadDraft();renderAll()}catch{alert('That backup file could not be read.')}};r.readAsText(e.target.files[0])};
+qa('[data-tab]').forEach(b=>b.onclick=()=>{qa('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['attendance','players','reports'].forEach(id=>q('#'+id).classList.toggle('hidden',id!==b.dataset.tab));renderAll()});
+loadDraft();renderAll();
+</script>
+</body>
+</html>
